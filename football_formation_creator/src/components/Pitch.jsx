@@ -1,29 +1,29 @@
-import React from "react"
-import ReactDOM from "react-dom"
-import PlayerCard from "./PlayerCard.jsx"
-import PositionIndicator from "./PositionIndicator.jsx"
+import React from 'react'
+import ReactDOM from 'react-dom'
+import PlayerCard from './PlayerCard.jsx'
+import PositionIndicator from './PositionIndicator.jsx'
 
 import { CSVLink } from 'react-csv'
 
 // Cache pitch image for offline use
-import pitchImage from "../data/pitch.svg"
+import pitchImage from '../data/pitch-1.png'
 
 export default class Pitch extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      value: "",
-      occupiedPositions: []
+      value: '',
+      occupiedPositions: [],
     }
   }
 
   componentDidMount() {
-    window.addEventListener("resize", this.getPitchCoords)
+    window.addEventListener('resize', this.getPitchCoords)
     this.getPitchCoords()
     this.setState({ lineupName: 'My team' })
     // Hide lineup name field on every click outside of it
-    document.addEventListener("touchstart", e => {
-      if (e.target !== document.querySelector(".EditLineupName")) {
+    document.addEventListener('touchstart', (e) => {
+      if (e.target !== document.querySelector('.EditLineupName')) {
         this.props.hideNameInput()
       }
     })
@@ -35,7 +35,9 @@ export default class Pitch extends React.Component {
       // Save occupied positions before rearranging positions
       const lockedOccupiedPositions = Array.from(this.state.occupiedPositions)
       for (const position of lockedOccupiedPositions) {
-        const cardToMove = document.querySelector(`[data-active-position='${position}']`)
+        const cardToMove = document.querySelector(
+          `[data-active-position='${position}']`
+        )
         this.unoccupyPosition(position)
         this.positionPlayer(position, cardToMove.classList[1])
       }
@@ -47,9 +49,9 @@ export default class Pitch extends React.Component {
     this.setState({ frame })
   }
 
-  editLineupName = e => {
+  editLineupName = (e) => {
     this.setState({
-      lineupName: e.target.value
+      lineupName: e.target.value,
     })
     // Disable direct download
     if (this.props.playersList.length === 11) {
@@ -57,17 +59,20 @@ export default class Pitch extends React.Component {
     }
   }
 
-  occupyPosition = position => {
-    if (typeof (this.state.occupiedPositions.find(e => e === position)) === "undefined") {
+  occupyPosition = (position) => {
+    if (
+      typeof this.state.occupiedPositions.find((e) => e === position) ===
+      'undefined'
+    ) {
       let newPositions = this.state.occupiedPositions
       newPositions.push(position)
       this.setState({
-        occupiedPositions: newPositions
+        occupiedPositions: newPositions,
       })
     }
   }
 
-  unoccupyPosition = position => {
+  unoccupyPosition = (position) => {
     let newPositions = this.state.occupiedPositions
     // Delete selected position from array
     for (let i = 0; i < this.state.occupiedPositions.length; i++) {
@@ -94,9 +99,12 @@ export default class Pitch extends React.Component {
   }
 
   showNameInput = () => {
-    if (window.innerWidth >= 910 || document.querySelectorAll(".Result-player").length >= 0) {
-      document.querySelector(".EditLineupName").focus()
-      document.querySelector(".EditLineupName").style.opacity = "1 !important"
+    if (
+      window.innerWidth >= 910 ||
+      document.querySelectorAll('.Result-player').length >= 0
+    ) {
+      document.querySelector('.EditLineupName').focus()
+      document.querySelector('.EditLineupName').style.opacity = '1 !important'
     }
   }
 
@@ -113,15 +121,19 @@ export default class Pitch extends React.Component {
             maxLength="21"
             value={this.state.lineupName}
             onChange={this.editLineupName}
-            onMouseEnter={e => {
+            onMouseEnter={(e) => {
               e.preventDefault()
               this.showNameInput()
             }}
-            onMouseLeave={() => { this.props.hideNameInput() }}
-            onTouchStart={() => { this.showNameInput() }}
+            onMouseLeave={() => {
+              this.props.hideNameInput()
+            }}
+            onTouchStart={() => {
+              this.showNameInput()
+            }}
           />
           <h2 className="LineupName">{this.state.lineupName}</h2>
-          {Object.keys(this.props.tactic).map(positionKey => {
+          {Object.keys(this.props.tactic).map((positionKey) => {
             return (
               <PositionIndicator
                 key={positionKey}
@@ -129,12 +141,14 @@ export default class Pitch extends React.Component {
                 leftValue={`${this.props.tactic[positionKey].x}%`}
                 topValue={`${this.props.tactic[positionKey].y}%`}
                 occupied={
-                  typeof (this.state.occupiedPositions.find(e => e === positionKey)) !== "undefined"
+                  typeof this.state.occupiedPositions.find(
+                    (e) => e === positionKey
+                  ) !== 'undefined'
                 }
               />
             )
           })}
-          {this.props.playersList.map(player => {
+          {this.props.playersList.map((player) => {
             return (
               <PlayerCard
                 player={player}
@@ -153,7 +167,7 @@ export default class Pitch extends React.Component {
             )
           })}
         </div>
-      </div >
+      </div>
     )
   }
 }
