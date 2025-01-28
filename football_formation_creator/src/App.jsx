@@ -4,15 +4,18 @@ import './App.css'
 import Search from './components/Search.jsx'
 import Customize from './components/Customize.jsx'
 import Pitch from './components/Pitch.jsx'
-import fonts from "./data/fonts.js"
+import fonts from './data/fonts.js'
 
 // Import dependencies
-const rasterizeHTML = require("rasterizehtml")
-const computedToInline = require("computed-style-to-inline-style")
+const rasterizeHTML = require('rasterizehtml')
+const computedToInline = require('computed-style-to-inline-style')
 
 // Save placeholder images for offline use
-const portraitPlaceholder = require("./data/placeholders/portrait (" + (Math.floor(Math.random() * 7) + 1) + ").png")
-const logoPlaceholder = require("./data/placeholders/logo.svg")
+const portraitPlaceholder = require('./data/placeholders/portrait (' +
+  (Math.floor(Math.random() * 7) + 1) +
+  ').png')
+// const logoPlaceholder = require("./data/placeholders/logo.svg")
+import logoPlaceholder from './data/placeholders/logo.png'
 
 export default class App extends React.Component {
   constructor(props) {
@@ -20,12 +23,12 @@ export default class App extends React.Component {
     this.state = {
       playersIndex: require('./data/index.json'),
       activeTactic: require('./tactics/4-3-3.json'),
-      activeTacticName: "4-3-3",
+      activeTacticName: '4-3-3',
       fileBackups: {},
       selectedPlayers: [],
       results: [],
-      downloadStatus: "disabled",
-      downloadLink: ""
+      downloadStatus: 'disabled',
+      downloadLink: '',
     }
   }
 
@@ -33,11 +36,11 @@ export default class App extends React.Component {
     document.body.prepend(fonts.fontsStyle)
   }
 
-  setActiveTactic = tacticName => {
+  setActiveTactic = (tacticName) => {
     let newTactic = require(`./tactics/${tacticName}.json`)
     this.setState({
       activeTactic: newTactic,
-      activeTacticName: tacticName
+      activeTacticName: tacticName,
     })
     // Disable direct download
     if (this.state.selectedPlayers.length === 11) {
@@ -47,107 +50,119 @@ export default class App extends React.Component {
 
   createCanvas = () => {
     // Loading message
-    this.setState({ downloadStatus: "loading" })
+    this.setState({ downloadStatus: 'loading' })
     // Fix playerCard hover style by overriding inline styles
-    const style = document.createElement("style")
-    style.type = "text/css"
-    style.innerText = ".PlayerCard {background: transparent !important;} .EditLineupName {opacity: 0 !important;}"
+    const style = document.createElement('style')
+    style.type = 'text/css'
+    style.innerText =
+      '.PlayerCard {background: transparent !important;} .EditLineupName {opacity: 0 !important;}'
     document.body.appendChild(style)
     // Create canvas to draw pitch
-    const canvas = document.createElement("canvas")
-    const domPitch = document.querySelector(".Pitch")
+    const canvas = document.createElement('canvas')
+    const domPitch = document.querySelector('.Pitch')
     const width = domPitch.getBoundingClientRect().width * 2
     canvas.width = width
     canvas.height = width
     // Reset Pitch transform to just before screenshot
     if (window.innerWidth <= 910) {
-      domPitch.classList.remove("Transform")
-      domPitch.style.transform = "unset"
+      domPitch.classList.remove('Transform')
+      domPitch.style.transform = 'unset'
     }
-    const names = document.querySelectorAll(".PlayerCard p")
+    const names = document.querySelectorAll('.PlayerCard p')
     for (const name of names) {
-      name.style.fontSize = `${window.getComputedStyle(name).fontSize} !important`
+      name.style.fontSize = `${
+        window.getComputedStyle(name).fontSize
+      } !important`
     }
     domPitch.prepend(fonts.fontsStyle)
     computedToInline(domPitch, { recursive: true })
     // Revert Pitch transform back to normal
     if (window.innerWidth <= 910) {
-      domPitch.classList.add("Transform")
+      domPitch.classList.add('Transform')
     }
     var yannis = this.exportDataToJson()
-    rasterizeHTML.drawDocument(domPitch, { zoom: 2 })
-      .then(renderResult => {
-        // Create canvas
-        const context = canvas.getContext("2d")
-        context.drawImage(renderResult.image, 0, 0, width, width, 0, 0, width, width)
-        // Prepare download
-        this.setState({
-          downloadStatus: "download",
-          downloadLink: yannis
-        })
-        // Fix hover style on textedit
-        const editLineupName = document.querySelector(".Pitch .EditLineupName")
-        editLineupName.addEventListener("mouseenter", () => {
-          style.innerText = `
+    rasterizeHTML.drawDocument(domPitch, { zoom: 2 }).then((renderResult) => {
+      // Create canvas
+      const context = canvas.getContext('2d')
+      context.drawImage(
+        renderResult.image,
+        0,
+        0,
+        width,
+        width,
+        0,
+        0,
+        width,
+        width
+      )
+      // Prepare download
+      this.setState({
+        downloadStatus: 'download',
+        downloadLink: yannis,
+      })
+      // Fix hover style on textedit
+      const editLineupName = document.querySelector('.Pitch .EditLineupName')
+      editLineupName.addEventListener('mouseenter', () => {
+        style.innerText = `
             ${style.innerText}
             .Pitch .EditLineupName {opacity: 1 !important;}
           `
-        })
-        editLineupName.addEventListener("mouseleave", () => {
-          style.innerText = `
+      })
+      editLineupName.addEventListener('mouseleave', () => {
+        style.innerText = `
             ${style.innerText}
             .Pitch .EditLineupName {opacity: 0 !important;}
           `
-        })
       })
+    })
   }
 
   exportDataToJson = () => {
     var players = this.state.selectedPlayers
-    var string = JSON.stringify(players);
+    var string = JSON.stringify(players)
     // create a blob object representing the data as a JSON string
     var file = new Blob([string], {
-      type: 'application/json'
-    });
+      type: 'application/json',
+    })
 
     // trigger a click event on an <a> tag to open the file explorer
-    return URL.createObjectURL(file);
+    return URL.createObjectURL(file)
   }
 
   markDownloadAsObsolete = () => {
-    this.setState({ downloadStatus: "create" })
+    this.setState({ downloadStatus: 'create' })
   }
 
-  removeFromIndex = playerName => {
+  removeFromIndex = (playerName) => {
     let newIndex = this.state.playersIndex
     delete newIndex[playerName]
     this.setState({ playersIndex: newIndex })
   }
 
-  addToIndex = playerName => {
+  addToIndex = (playerName) => {
     let newIndex = this.state.playersIndex
     newIndex[playerName] = this.state.fileBackups[playerName]
     this.setState({ playersIndex: newIndex })
   }
 
-  addToBackups = player => {
+  addToBackups = (player) => {
     let newBackups = this.state.fileBackups
     newBackups[player] = this.state.playersIndex[player]
     this.setState({ fileBackups: newBackups })
   }
 
-  removeFromBackups = player => {
+  removeFromBackups = (player) => {
     let newBackups = this.state.fileBackups
     delete newBackups[player]
     this.setState({ fileBackups: newBackups })
   }
 
-  getPlayerFile = playerFilePath => {
+  getPlayerFile = (playerFilePath) => {
     //const file = require(`${playerFilePath}`)
     return require(`${playerFilePath}`)
   }
 
-  selectPlayer = playerObject => {
+  selectPlayer = (playerObject) => {
     // Focus Search if not all players were added
     if (this.state.selectedPlayers.length < 10) {
       document.querySelector('.Search-player').focus()
@@ -156,7 +171,10 @@ export default class App extends React.Component {
     newSelection.push(playerObject)
     this.setState({ selectedPlayers: newSelection })
     // Remove selected player from index so it can't be added twice
-    const formattedName = playerObject.name.replace(/\s/g, "").normalize('NFD').replace(/[\u0300-\u036f]/g, "")
+    const formattedName = playerObject.name
+      .replace(/\s/g, '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
     this.addToBackups(formattedName)
     this.removeFromIndex(formattedName)
     // Hide selected player from results
@@ -170,13 +188,13 @@ export default class App extends React.Component {
     // Prevent adding more than 11 players
     if (this.state.selectedPlayers.length > 10) {
       // Enable donwload button
-      this.setState({ downloadStatus: "create" })
+      this.setState({ downloadStatus: 'create' })
     }
     // Reset results
     this.setResults([])
   }
 
-  unselectPlayer = playerObject => {
+  unselectPlayer = (playerObject) => {
     let newSelection = this.state.selectedPlayers
     for (let i = 0; i < this.state.selectedPlayers.length; i++) {
       if (this.state.selectedPlayers[i] === playerObject) {
@@ -185,22 +203,25 @@ export default class App extends React.Component {
     }
     this.setState({
       selectedPlayers: newSelection,
-      downloadStatus: "disabled"
+      downloadStatus: 'disabled',
     })
     // Put player back in index
-    const formattedName = playerObject.name.replace(/\s/g, "").normalize('NFD').replace(/[\u0300-\u036f]/g, "")
+    const formattedName = playerObject.name
+      .replace(/\s/g, '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
     this.addToIndex(formattedName)
     this.removeFromBackups(formattedName)
   }
 
-  setResults = newResults => {
+  setResults = (newResults) => {
     this.setState({ results: newResults })
   }
 
   hideNameInput = () => {
     // Remove focus on lineup name
-    document.querySelector(".EditLineupName").style.opacity = "0 !important"
-    document.querySelector(".EditLineupName").blur()
+    document.querySelector('.EditLineupName').style.opacity = '0 !important'
+    document.querySelector('.EditLineupName').blur()
   }
 
   render() {
