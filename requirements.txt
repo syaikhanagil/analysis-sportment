@@ -1,0 +1,44 @@
+# pip install -r requirements.txt
+
+# Base ----------------------------------------
+matplotlib
+numpy
+opencv-python
+Pillow
+PyYAML
+requests
+scipy
+torch
+torchvision
+torchaudio
+tqdm
+
+# Plotting ------------------------------------
+pandas
+seaborn
+
+# Logging -------------------------------------
+tensorboard
+
+# deep_sort -----------------------------------
+easydict
+
+# Extras --------------------------------------
+thop  # FLOPs computation
+Cython
+h5py
+six
+tb-nightly
+future
+yacs
+gdown
+flake8
+yapf
+isort
+imageio
+
+# Rest ----------------------------------------
+PySide6
+pytube
+pymongo
+pickle
